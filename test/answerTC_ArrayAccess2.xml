@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<answer>
+    <flows>
+        <flow>
+            <reference type="from">
+                <statement>
+                    <statementfull>$r5 = virtualinvoke $r4.&lt;android.telephony.TelephonyManager: java.lang.String getDeviceId()&gt;()</statementfull>
+                    <statementgeneric>android.telephony.TelephonyManager: java.lang.String getDeviceId()</statementgeneric>
+                    <linenumber>18</linenumber>
+                </statement>
+                <method>&lt;de.ecspride.ArrayAccess2: void onCreate(android.os.Bundle)&gt;</method>
+                <classname>de.ecspride.ArrayAccess2</classname>
+                <app>
+                    <file>ArrayAccess2.apk</file>
+                    <hashes>
+                        <hash type="MD5">67d62458949e1879cc62fa2339df3047</hash>
+                        <hash type="SHA-1">6ca465e462c3c4b7a62db1bd3ff1d8c370916ca6</hash>
+                        <hash type="SHA-256">3acad38a41874eb636b49cdf87d2e97af66cacc0c3b32f4f7eed9f0f5a58cc5f</hash>
+                    </hashes>
+                </app>
+            </reference>
+            <reference type="to">
+                <statement>
+                    <statementfull>virtualinvoke $r6.&lt;android.telephony.SmsManager: void sendTextMessage(java.lang.String,java.lang.String,java.lang.String,android.app.PendingIntent,android.app.PendingIntent)&gt;("+49 1234", null, $r5, null, null)</statementfull>
+                    <statementgeneric>android.telephony.SmsManager: void sendTextMessage(java.lang.String,java.lang.String,java.lang.String,android.app.PendingIntent,android.app.PendingIntent)</statementgeneric>
+                    <linenumber>22</linenumber>
+                    <parameters>
+                        <parameter>
+                            <type>java.lang.String</type>
+                            <value>"+49 1234"</value>
+                        </parameter>
+                        <parameter>
+                            <type>java.lang.String</type>
+                            <value>null</value>
+                        </parameter>
+                        <parameter>
+                            <type>java.lang.String</type>
+                            <value>$r5</value>
+                        </parameter>
+                        <parameter>
+                            <type>android.app.PendingIntent</type>
+                            <value>null</value>
+                        </parameter>
+                        <parameter>
+                            <type>android.app.PendingIntent</type>
+                            <value>null</value>
+                        </parameter>
+                    </parameters>
+                </statement>
+                <method>&lt;de.ecspride.ArrayAccess2: void onCreate(android.os.Bundle)&gt;</method>
+                <classname>de.ecspride.ArrayAccess2</classname>
+                <app>
+                    <file>ArrayAccess2.apk</file>
+                    <hashes>
+                        <hash type="MD5">67d62458949e1879cc62fa2339df3047</hash>
+                        <hash type="SHA-1">6ca465e462c3c4b7a62db1bd3ff1d8c370916ca6</hash>
+                        <hash type="SHA-256">3acad38a41874eb636b49cdf87d2e97af66cacc0c3b32f4f7eed9f0f5a58cc5f</hash>
+                    </hashes>
+                </app>
+            </reference>
+        </flow>
+    </flows>
+</answer>

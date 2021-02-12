@@ -10,7 +10,6 @@ import de.foellix.aql.datastructure.Answer;
 import de.foellix.aql.datastructure.Attribute;
 import de.foellix.aql.datastructure.Attributes;
 import de.foellix.aql.datastructure.Flow;
-import de.foellix.aql.datastructure.Permission;
 import de.foellix.aql.datastructure.Reference;
 import de.foellix.aql.datastructure.handler.AnswerHandler;
 import de.foellix.aql.helper.EqualsHelper;
@@ -40,28 +39,22 @@ public class CheckOperator {
 		this.answerHornDroid = AnswerHandler.parseXML(answerHornDroidFile);
 		this.resultAnswerFile = getResultFile();
 
-		boolean permissionCheck = false;
-		if (this.answerHornDroid.getPermissions() != null
-				&& !this.answerHornDroid.getPermissions().getPermission().isEmpty()) {
-			for (final Permission p : this.answerHornDroid.getPermissions().getPermission()) {
-				if (p.getName().equals("HORNDROID_SUCCESSFULLY_EXECUTED")) {
-					permissionCheck = true;
-				}
+		if (answerToCheckFile.exists()) {
+			if (answerHornDroidFile.exists()) {
+				check();
+			} else {
+				markUnchecked();
 			}
-		}
-
-		if (permissionCheck && answerToCheckFile.exists() && this.answerToCheck.getFlows() != null
-				&& !this.answerToCheck.getFlows().getFlow().isEmpty() && answerHornDroidFile.exists()) {
-			check();
-		} else {
-			markUnchecked();
 		}
 
 		AnswerHandler.createXML(this.answerToCheck, this.resultAnswerFile);
 		Log.msg(Helper.toString(this.answerToCheck), Log.NORMAL);
 	}
 
-	private File getResultFile() {
+	public File getResultFile() {
+		if (this.resultAnswerFile != null) {
+			return this.resultAnswerFile;
+		}
 		final List<File> files = new ArrayList<>();
 		files.add(this.answerToCheckFile);
 		files.add(this.answerHornDroidFile);
@@ -81,9 +74,9 @@ public class CheckOperator {
 		for (final Flow flowTC : this.answerToCheck.getFlows().getFlow()) {
 			final Reference refTC = Helper.getTo(flowTC.getReference());
 			boolean matchFound = false;
-			for (final Flow flowHD : this.answerToCheck.getFlows().getFlow()) {
+			for (final Flow flowHD : this.answerHornDroid.getFlows().getFlow()) {
 				final Reference refHD = flowHD.getReference().iterator().next();
-				if (EqualsHelper.equals(refTC, refHD)) {
+				if (contains(refTC, refHD)) {
 					matchFound = true;
 					Log.msg("Found match for: " + Helper.toString(refTC), Log.NORMAL);
 					attachAttribute(flowTC, true);
@@ -97,6 +90,24 @@ public class CheckOperator {
 
 		// Step 3) Remove uncheckable flows
 		this.answerToCheck.getFlows().getFlow().removeAll(removeFlows);
+	}
+
+	private boolean contains(Reference refTC, Reference refHD) {
+		if (refTC.getStatement() != null && refTC.getStatement().getStatementfull() != null
+				&& !refTC.getStatement().getStatementfull().isEmpty() && refHD.getStatement() != null
+				&& refHD.getStatement().getStatementfull() != null
+				&& !refHD.getStatement().getStatementfull().isEmpty()) {
+			if (refTC.getStatement().getStatementfull().contains(refHD.getStatement().getStatementfull())) {
+				if (refTC.getMethod().contains(refHD.getMethod())) {
+					if (refTC.getClassname().contains(refHD.getClassname())) {
+						if (EqualsHelper.equals(refTC.getApp(), refHD.getApp())) {
+							return true;
+						}
+					}
+				}
+			}
+		}
+		return false;
 	}
 
 	private void markUnchecked() {
