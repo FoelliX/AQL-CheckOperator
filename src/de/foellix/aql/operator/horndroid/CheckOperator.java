@@ -62,34 +62,43 @@ public class CheckOperator {
 	}
 
 	private void check() {
-		final Collection<Flow> removeFlows = new ArrayList<>();
+		if (this.answerToCheck.getFlows() != null && this.answerToCheck.getFlows().getFlow() != null
+				&& !this.answerToCheck.getFlows().getFlow().isEmpty()) {
+			final Collection<Flow> removeFlows = new ArrayList<>();
 
-		// Step 1) Complete HornDroid Answer
-		Log.msg("Step 1/2) Completing statements according to known Sources and Sinks", Log.NORMAL);
-		final SourceAndSinkEditor sase = new SourceAndSinkEditor(SOURCES_AND_SINKS_FILE);
-		sase.complete(this.answerHornDroid);
+			// Step 1) Complete HornDroid Answer
+			Log.msg("Step 1/2) Completing statements according to known Sources and Sinks", Log.NORMAL);
+			final SourceAndSinkEditor sase = new SourceAndSinkEditor(SOURCES_AND_SINKS_FILE);
+			if (this.answerHornDroid.getFlows() != null && this.answerHornDroid.getFlows().getFlow() != null
+					&& !this.answerHornDroid.getFlows().getFlow().isEmpty()) {
+				sase.complete(this.answerHornDroid);
+			}
 
-		// Step 2) Check equality
-		Log.msg("Step 2/2) Looking for matches", Log.NORMAL);
-		for (final Flow flowTC : this.answerToCheck.getFlows().getFlow()) {
-			final Reference refTC = Helper.getTo(flowTC.getReference());
-			boolean matchFound = false;
-			for (final Flow flowHD : this.answerHornDroid.getFlows().getFlow()) {
-				final Reference refHD = flowHD.getReference().iterator().next();
-				if (contains(refTC, refHD)) {
-					matchFound = true;
-					Log.msg("Found match for: " + Helper.toString(refTC), Log.NORMAL);
-					attachAttribute(flowTC, true);
-					break;
+			// Step 2) Check equality
+			Log.msg("Step 2/2) Looking for matches", Log.NORMAL);
+			for (final Flow flowTC : this.answerToCheck.getFlows().getFlow()) {
+				final Reference refTC = Helper.getTo(flowTC.getReference());
+				boolean matchFound = false;
+				if (this.answerHornDroid.getFlows() != null && this.answerHornDroid.getFlows().getFlow() != null
+						&& !this.answerHornDroid.getFlows().getFlow().isEmpty()) {
+					for (final Flow flowHD : this.answerHornDroid.getFlows().getFlow()) {
+						final Reference refHD = flowHD.getReference().iterator().next();
+						if (contains(refTC, refHD)) {
+							matchFound = true;
+							Log.msg("Found match for: " + Helper.toString(refTC), Log.NORMAL);
+							attachAttribute(flowTC, true);
+							break;
+						}
+					}
+				}
+				if (!matchFound) {
+					removeFlows.add(flowTC);
 				}
 			}
-			if (!matchFound) {
-				removeFlows.add(flowTC);
-			}
-		}
 
-		// Step 3) Remove uncheckable flows
-		this.answerToCheck.getFlows().getFlow().removeAll(removeFlows);
+			// Step 3) Remove uncheckable flows
+			this.answerToCheck.getFlows().getFlow().removeAll(removeFlows);
+		}
 	}
 
 	private boolean contains(Reference refTC, Reference refHD) {
