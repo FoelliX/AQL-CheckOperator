@@ -45,7 +45,7 @@ public class SourceAndSinkEditor {
 				for (final String strSuSi : this.susiStrings) {
 					if (strSuSi.replaceAll(", ", ",").contains(strHD)) {
 						Log.msg("Changing statement: " + ref.getStatement().getStatementfull(), Log.NORMAL);
-						ref.setStatement(Helper.createStatement("<" + strSuSi + ">", false));
+						ref.setStatement(Helper.createStatement(strSuSi, false));
 						Log.msg(strHD + "\nfound in SuSi file\n" + strSuSi, Log.DEBUG);
 						Log.msg("to: " + ref.getStatement().getStatementfull(), Log.NORMAL);
 						break;
