@@ -102,11 +102,11 @@ public class CheckOperator {
 	}
 
 	private boolean contains(Reference refTC, Reference refHD) {
-		if (refTC.getStatement() != null && refTC.getStatement().getStatementfull() != null
-				&& !refTC.getStatement().getStatementfull().isEmpty() && refHD.getStatement() != null
-				&& refHD.getStatement().getStatementfull() != null
-				&& !refHD.getStatement().getStatementfull().isEmpty()) {
-			if (refTC.getStatement().getStatementfull().contains(refHD.getStatement().getStatementfull())) {
+		if (refTC.getStatement() != null && refTC.getStatement().getStatementgeneric() != null
+				&& !refTC.getStatement().getStatementgeneric().isEmpty() && refHD.getStatement() != null
+				&& refHD.getStatement().getStatementgeneric() != null
+				&& !refHD.getStatement().getStatementgeneric().isEmpty()) {
+			if (refTC.getStatement().getStatementgeneric().contains(refHD.getStatement().getStatementgeneric())) {
 				if (refTC.getMethod().contains(refHD.getMethod())) {
 					if (refTC.getClassname().contains(refHD.getClassname())) {
 						if (EqualsHelper.equals(refTC.getApp(), refHD.getApp())) {
