@@ -1,4 +1,4 @@
-﻿![Java 8](https://img.shields.io/badge/java-8-brightgreen.svg)
+﻿![java 17](https://img.shields.io/badge/java-17-brightgreen.svg)
 ---
 <p align="center">
 	<img src="https://FoelliX.github.io/AQL-System/logo.png" width="300px"/>
@@ -18,9 +18,9 @@ To use the operator in any tool employing the [AQL-System](https://foellix.githu
 			<priority>1</priority>
 			<execute>
 				<run>java -jar AQL-CheckOperator-0.1.0-SNAPSHOT.jar %ANSWERS%</run>
-                <result>/path/to/AQL-CheckOperator/result_%ANSWERSHASH%.xml</result>
-                <instances>0</instances>
-                <memoryPerInstance>2</memoryPerInstance>
+				<result>/path/to/AQL-CheckOperator/result_%ANSWERSHASH%.xml</result>
+				<instances>0</instances>
+				<memoryPerInstance>2</memoryPerInstance>
 			</execute>
 			<path>/path/to/AQL-CheckOperator/</path>
 			<questions>CHECK(2)</questions>

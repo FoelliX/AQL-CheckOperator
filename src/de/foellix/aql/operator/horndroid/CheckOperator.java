@@ -13,7 +13,6 @@ import de.foellix.aql.datastructure.Flow;
 import de.foellix.aql.datastructure.Reference;
 import de.foellix.aql.datastructure.handler.AnswerHandler;
 import de.foellix.aql.helper.EqualsHelper;
-import de.foellix.aql.helper.HashHelper;
 import de.foellix.aql.helper.Helper;
 
 public class CheckOperator {
@@ -23,42 +22,55 @@ public class CheckOperator {
 	private final File answerHornDroidFile;
 	private final Answer answerToCheck;
 	private final Answer answerHornDroid;
-	private final File resultAnswerFile;
 
 	public static void main(String[] args) {
-		final String[] files = args[0].split(", ");
+		String filesStr = "";
+		if (args.length >= 1 && args.length <= 2) {
+			for (final String arg : args) {
+				filesStr += arg.replace("\"", "");
+			}
+		} else {
+			Log.error("Stopping execution! Too many arguments!");
+		}
+		final String[] files = filesStr.split(", ");
 		final File answerToCheckFile = new File(files[0]);
 		final File answerHornDroidFile = new File(files[1]);
+		Log.msg("Answer to check (computed with e.g. FlowDroid):\n\t" + answerToCheckFile.getAbsolutePath()
+				+ "\nAnswer for checking (computed with e.g. HornDroid):\n\t" + answerHornDroidFile.getAbsolutePath(),
+				Log.NORMAL);
 		new CheckOperator(answerToCheckFile, answerHornDroidFile);
 	}
 
 	public CheckOperator(File answerToCheckFile, File answerHornDroidFile) {
 		this.answerToCheckFile = answerToCheckFile;
 		this.answerHornDroidFile = answerHornDroidFile;
-		this.answerToCheck = AnswerHandler.parseXML(answerToCheckFile);
-		this.answerHornDroid = AnswerHandler.parseXML(answerHornDroidFile);
-		this.resultAnswerFile = getResultFile();
-
 		if (answerToCheckFile.exists()) {
-			if (answerHornDroidFile.exists()) {
-				check();
-			} else {
-				markUnchecked();
-			}
+			this.answerToCheck = AnswerHandler.parseXML(answerToCheckFile);
+		} else {
+			this.answerToCheck = new Answer();
+		}
+		if (answerHornDroidFile.exists()) {
+			this.answerHornDroid = AnswerHandler.parseXML(answerHornDroidFile);
+			check();
+		} else {
+			this.answerHornDroid = null;
+			markUnchecked();
 		}
 
-		AnswerHandler.createXML(this.answerToCheck, this.resultAnswerFile);
-		Log.msg(Helper.toString(this.answerToCheck), Log.NORMAL);
+		final File resultAnswerFile = getResultFile();
+		AnswerHandler.createXML(this.answerToCheck, resultAnswerFile);
+		Log.msg("Answer-File: " + resultAnswerFile + "\nContent:\n" + Helper.toString(this.answerToCheck), Log.NORMAL);
 	}
 
 	public File getResultFile() {
-		if (this.resultAnswerFile != null) {
-			return this.resultAnswerFile;
-		}
 		final List<File> files = new ArrayList<>();
-		files.add(this.answerToCheckFile);
-		files.add(this.answerHornDroidFile);
-		return new File("result_" + HashHelper.sha256Hash(Helper.answerFilesAsString(files)) + ".xml");
+		if (this.answerToCheckFile.exists()) {
+			files.add(this.answerToCheckFile);
+		}
+		if (this.answerHornDroidFile.exists()) {
+			files.add(this.answerHornDroidFile);
+		}
+		return new File("result_" + Helper.getAnswerFilesAsHash(Helper.toHashedFileList(files)) + ".xml");
 	}
 
 	private void check() {

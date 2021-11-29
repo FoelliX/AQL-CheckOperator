@@ -30,9 +30,8 @@ public class SourceAndSinkEditor {
 				}
 			}
 		} catch (final Exception e) {
-			// TODO: Update to AQL 2.0: replace by Log.getExceptionAppendix(e)
-			Log.error("Error while parsing SuSi file: " + sourcesAndSinksFile.getAbsolutePath() + " ("
-					+ e.getClass().getSimpleName() + ": " + e.getMessage() + ")");
+			Log.error("Error while parsing SuSi file: " + sourcesAndSinksFile.getAbsolutePath()
+					+ Log.getExceptionAppendix(e));
 		}
 	}
 

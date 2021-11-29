@@ -11,12 +11,12 @@ import de.foellix.aql.Log;
 import de.foellix.aql.converter.IConverter;
 import de.foellix.aql.converter.horndroid.ConverterHD;
 import de.foellix.aql.datastructure.Answer;
-import de.foellix.aql.datastructure.QuestionPart;
-import de.foellix.aql.datastructure.Reference;
 import de.foellix.aql.datastructure.handler.AnswerHandler;
-import de.foellix.aql.helper.Helper;
+import de.foellix.aql.datastructure.query.QuestionReference;
+import de.foellix.aql.datastructure.query.QuestionString;
 import de.foellix.aql.operator.horndroid.CheckOperator;
-import de.foellix.aql.system.task.ToolTaskInfo;
+import de.foellix.aql.system.task.ConverterTask;
+import de.foellix.aql.system.task.ConverterTaskInfo;
 
 public class CheckOperatorTest {
 	private static final File TEMP = new File("test/temp.xml");
@@ -54,13 +54,45 @@ public class CheckOperatorTest {
 				new File("test/apps/ArrayAccess2.apk"), 0);
 	}
 
+	@Test
+	void test05() {
+		test(new File("test/empty.xml"), new File("test/AnswerHD_DirectLeak1.xml"), 0);
+	}
+
+	@Test
+	void test06() {
+		test(new File("test/AnswerTC_DirectLeak1.xml"), new File("test/empty.xml"), 0);
+	}
+
+	@Test
+	void test07() {
+		test(new File("test/empty.xml"), new File("test/empty.xml"), 0);
+	}
+
+	@Test
+	void test08() {
+		test(new File("test/notExistent.xml"), new File("test/AnswerHD_DirectLeak1.xml"), 0);
+	}
+
+	@Test
+	void test09() {
+		test(new File("test/AnswerTC_DirectLeak1.xml"), new File("test/notExistent.xml"), 1);
+	}
+
+	@Test
+	void test10() {
+		test(new File("test/notExistent.xml"), new File("test/notExistent.xml"), 0);
+	}
+
 	private void test(File testTCFile, File testHDFile, int expectedNumberOfFlows) {
 		boolean noException = true;
 		try {
 			// Run CheckOperator
 			final CheckOperator co = new CheckOperator(testTCFile, testHDFile);
 			final Answer answer = AnswerHandler.parseXML(co.getResultFile());
-			assertEquals(expectedNumberOfFlows, answer.getFlows().getFlow().size());
+			if (!(answer.getFlows() == null && expectedNumberOfFlows == 0)) {
+				assertEquals(expectedNumberOfFlows, answer.getFlows().getFlow().size());
+			}
 		} catch (final Exception e) {
 			noException = false;
 			e.printStackTrace();
@@ -73,18 +105,21 @@ public class CheckOperatorTest {
 		boolean noException = true;
 		try {
 			// Run ConverterHD
-			final Reference ref = new Reference();
-			ref.setApp(Helper.createApp(apkFile));
-			final QuestionPart qp = new QuestionPart();
-			qp.addReference(ref);
-			final ToolTaskInfo taskInfo = new ToolTaskInfo(null, qp);
+			final QuestionReference ref = new QuestionReference();
+			ref.setApp(new QuestionString(apkFile.getAbsolutePath()));
+			final ConverterTaskInfo taskInfo = new ConverterTaskInfo();
+			taskInfo.setData(ConverterTaskInfo.APP_APK, ref.getApp().toStringInAnswer(false));
+			taskInfo.setData(ConverterTaskInfo.RESULT_FILE, testHDFileRAW.getAbsolutePath());
+			final ConverterTask task = new ConverterTask(null, taskInfo, null);
 			final IConverter hdConverter = new ConverterHD();
-			AnswerHandler.createXML(hdConverter.parse(testHDFileRAW, taskInfo), TEMP);
+			AnswerHandler.createXML(hdConverter.parse(task), TEMP);
 
 			// Run CheckOperator
 			final CheckOperator co = new CheckOperator(testTCFile, TEMP);
 			final Answer answer = AnswerHandler.parseXML(co.getResultFile());
-			assertEquals(expectedNumberOfFlows, answer.getFlows().getFlow().size());
+			if (!(answer.getFlows() == null && expectedNumberOfFlows == 0)) {
+				assertEquals(expectedNumberOfFlows, answer.getFlows().getFlow().size());
+			}
 		} catch (final Exception e) {
 			noException = false;
 			e.printStackTrace();
